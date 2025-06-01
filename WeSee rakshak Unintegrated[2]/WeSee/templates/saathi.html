@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakshak - Student Risk Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card.high-risk {
+            background-color: var(--danger-color);
+        }
+        
+        .stat-card.medium-risk {
+            background-color: var(--warning-color);
+        }
+        
+        .stat-card.low-risk {
+            background-color: var(--success-color);
+        }
+        
+        .stat-card.total {
+            background-color: var(--primary-color);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .threshold-table {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .threshold-table th {
+            background-color: #f8f9fa;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-area:hover {
+            border-color: var(--secondary-color);
+            background-color: #f8f9fa;
+        }
+        
+        .file-upload-area i {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>
+                Rakshak
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- File Upload Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Upload Student Data</h5>
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="file-upload-area" id="dropZone">
+                                <i class="fas fa-file-upload"></i>
+                                <h4>Drag & Drop your CSV/Excel file here</h4>
+                                <p class="text-muted">or</p>
+                                <input type="file" id="fileInput" class="d-none" accept=".csv,.xlsx,.xls">
+                                <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                    Choose File
+                                </button>
+                                <p class="mt-2 text-muted" id="selectedFile">No file selected</p>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3" id="uploadButton" disabled>
+                                <i class="fas fa-upload me-2"></i>
+                                Upload and Analyze
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card total">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" id="totalStudents">0</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card high-risk">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-number" id="highRiskStudents">0</div>
+                    <div class="stat-label">High Risk Students</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card medium-risk">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="stat-number" id="mediumRiskStudents">0</div>
+                    <div class="stat-label">Medium Risk Students</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card low-risk">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-number" id="lowRiskStudents">0</div>
+                    <div class="stat-label">Low Risk Students</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Level Thresholds -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Risk Level Thresholds</h5>
+                        <table class="table threshold-table">
+                            <thead>
+                                <tr>
+                                    <th>Risk Level</th>
+                                    <th>Score Range (%)</th>
+                                    <th>Color</th>
+                                    <th>Meaning</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>High Risk</td>
+                                    <td>70–100</td>
+                                    <td><span class="badge bg-danger">🔴 Red</span></td>
+                                    <td>Very likely to drop out without immediate intervention</td>
+                                </tr>
+                                <tr>
+                                    <td>Medium Risk</td>
+                                    <td>40–69</td>
+                                    <td><span class="badge bg-warning">🟡 Yellow</span></td>
+                                    <td>Showing early warning signs; monitor closely</td>
+                                </tr>
+                                <tr>
+                                    <td>Low Risk</td>
+                                    <td>0–39</td>
+                                    <td><span class="badge bg-success">🟢 Green</span></td>
+                                    <td>Stable; no major risk signs currently</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example Scenarios -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Example Scenarios</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-danger">High Risk Example</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-user-graduate me-2"></i>Attendance: 50%</li>
+                                            <li><i class="fas fa-calculator me-2"></i>Math score: 30%</li>
+                                            <li><i class="fas fa-sign-in-alt me-2"></i>Engagement: Logged in only once in last 2 weeks</li>
+                                        </ul>
+                                        <div class="alert alert-danger">
+                                            <strong>Result:</strong> 78% dropout risk → Red (High Risk)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-success">Low Risk Example</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-user-graduate me-2"></i>Attendance: 82%</li>
+                                            <li><i class="fas fa-calculator me-2"></i>Average marks: 60%</li>
+                                            <li><i class="fas fa-sign-in-alt me-2"></i>Engagement: Good</li>
+                                        </ul>
+                                        <div class="alert alert-success">
+                                            <strong>Result:</strong> 35% dropout risk → Green (Low Risk)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">View Student Dashboard</h5>
+                        <p class="card-text">View detailed information about all students and their performance.</p>
+                        <a href="/students" class="btn btn-primary">Go to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // File upload handling
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const selectedFile = document.getElementById('selectedFile');
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadForm = document.getElementById('uploadForm');
+
+        // Handle file selection
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile.textContent = file.name;
+                uploadButton.disabled = false;
+            }
+        });
+
+        // Handle drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const style = getComputedStyle(document.documentElement);
+            dropZone.style.borderColor = style.getPropertyValue('--secondary-color');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#dee2e6';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#dee2e6';
+            
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                fileInput.files = e.dataTransfer.files;
+                selectedFile.textContent = file.name;
+                uploadButton.disabled = false;
+            }
+        });
+
+        // Handle form submission
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            try {
+                const response = await fetch('/api/train', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Update dashboard stats
+                    updateDashboardStats(result);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        function updateDashboardStats(data) {
+            document.getElementById('totalStudents').textContent = data.total_students || 0;
+            document.getElementById('highRiskStudents').textContent = data.high_risk || 0;
+            document.getElementById('mediumRiskStudents').textContent = data.medium_risk || 0;
+            document.getElementById('lowRiskStudents').textContent = data.low_risk || 0;
+        }
+    </script>
+</body>
+</html> 

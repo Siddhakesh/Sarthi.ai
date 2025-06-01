@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .student-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .suggestion-card {
+            border-left: 4px solid #007bff;
+            margin-bottom: 10px;
+        }
+        .suggestion-card.warning {
+            border-left-color: #ffc107;
+        }
+        .suggestion-card.danger {
+            border-left-color: #dc3545;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            padding: 2rem;
+        }
+        .risk-badge {
+            font-size: 0.9em;
+            padding: 0.3em 0.6em;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Student Performance Dashboard</h1>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading student data...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i>
+            <p id="errorMessage"></p>
+            <a href="/" class="btn btn-primary">Go to Home</a>
+        </div>
+        
+        <!-- Student List -->
+        <div class="row" id="studentList" style="display: none;">
+            <!-- Student cards will be dynamically added here -->
+        </div>
+
+        <!-- Student Details Modal -->
+        <div class="modal fade" id="studentModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Student Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="studentDetails">
+                            <!-- Student details will be dynamically added here -->
+                        </div>
+                        <h6 class="mt-4">Improvement Suggestions</h6>
+                        <div id="suggestions">
+                            <!-- Suggestions will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to get risk badge class
+        function getRiskBadgeClass(riskLevel) {
+            switch (riskLevel) {
+                case 'High':
+                    return 'bg-danger';
+                case 'Medium':
+                    return 'bg-warning text-dark'; // Added text-dark for visibility on yellow
+                case 'Low':
+                    return 'bg-success';
+                default:
+                    return 'bg-secondary';
+            }
+        }
+
+        // Fetch and display student list
+        async function loadStudents() {
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+            const studentList = document.getElementById('studentList');
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                loadingState.style.display = 'block';
+                errorState.style.display = 'none';
+                studentList.style.display = 'none';
+
+                const response = await fetch('/api/students');
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to load students');
+                }
+
+                const students = await response.json();
+                
+                if (students.length === 0) {
+                    throw new Error('No students found in the dataset');
+                }
+
+                studentList.innerHTML = '';
+                
+                students.forEach(student => {
+                    const card = document.createElement('div');
+                    card.className = 'col-md-4 mb-4';
+                    const riskBadgeClass = getRiskBadgeClass(student.risk_level);
+                    card.innerHTML = `
+                        <div class="card student-card" onclick="showStudentDetails('${student.name}')">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <span class="badge ${riskBadgeClass} risk-badge float-end">${student.risk_level}</span>
+                                    ${student.name}
+                                </h5>
+                                <p class="card-text">
+                                    <strong>Student ID:</strong> ${student.student_id || 'N/A'}<br>
+                                    <strong>Grade:</strong> ${student.grade_level}<br>
+                                    <strong>Risk Score:</strong> ${student.risk_probability.toFixed(2) * 100}%<br>
+                                    <strong>Status:</strong> ${student.explanation || 'No explanation available'}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    studentList.appendChild(card);
+                });
+
+                loadingState.style.display = 'none';
+                studentList.style.display = 'flex';
+            } catch (error) {
+                console.error('Error loading students:', error);
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                errorMessage.textContent = error.message;
+            }
+        }
+
+        // Show student details
+        async function showStudentDetails(studentName) {
+            try {
+                const response = await fetch(`/api/student/${studentName}`);
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to load student details');
+                }
+
+                const data = await response.json();
+                
+                const details = document.getElementById('studentDetails');
+                const suggestions = document.getElementById('suggestions');
+                
+                // Display student details
+                details.innerHTML = `
+                    <h4>${studentName}</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Grade Level:</strong> ${data.student_details.grade_level}</p>
+                            <p><strong>Math Score:</strong> ${data.student_details.test_score_math}%</p>
+                            <p><strong>English Score:</strong> ${data.student_details.test_score_english}%</p>
+                            <p><strong>Attendance Rate:</strong> ${data.student_details.attendance_rate_last_month}%</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Homework Submission:</strong> ${data.student_details.homework_submission_rate}%</p>
+                            <p><strong>Class Participation:</strong> ${data.student_details.class_participation_level}</p>
+                            <p><strong>Quiz Participation:</strong> ${data.student_details.quiz_participation_rate}%</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Display suggestions
+                suggestions.innerHTML = '';
+                if (data.improvement_suggestions.length > 0) {
+                    data.improvement_suggestions.forEach(suggestion => {
+                        const card = document.createElement('div');
+                        card.className = 'card suggestion-card mb-3';
+                        // Determine badge color based on suggestion details if available
+                        let suggestionClass = '';
+                        if (suggestion.current_score !== undefined && suggestion.current_score < 50 || 
+                            suggestion.current_rate !== undefined && suggestion.current_rate < 70) {
+                             suggestionClass = 'danger';
+                         } else if (suggestion.current_score !== undefined && suggestion.current_score < 70 || 
+                                    suggestion.current_rate !== undefined && suggestion.current_rate < 85) {
+                             suggestionClass = 'warning';
+                         }
+                        card.classList.add(suggestionClass);
+
+                        card.innerHTML = `
+                            <div class="card-body">
+                                <h6 class="card-title">${suggestion.subject || suggestion.area}</h6>
+                                <p class="card-text">
+                                    ${suggestion.current_score !== undefined ? `Current Score: ${suggestion.current_score}%<br>` : ''}
+                                    ${suggestion.current_rate !== undefined ? `Current Rate: ${suggestion.current_rate}%<br>` : ''}
+                                    ${suggestion.current_level !== undefined ? `Current Level: ${suggestion.current_level}<br>` : ''}
+                                    Suggestion: ${suggestion.suggestion}
+                                </p>
+                            </div>
+                        `;
+                        suggestions.appendChild(card);
+                    });
+                } else {
+                    suggestions.innerHTML = '<p>No specific improvement suggestions at this time.</p>';
+                }
+
+                
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('studentModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading student details:', error);
+                alert('Error loading student details: ' + error.message);
+            }
+        }
+
+        // Load students when page loads
+        document.addEventListener('DOMContentLoaded', loadStudents);
+    </script>
+</body>
+</html> 

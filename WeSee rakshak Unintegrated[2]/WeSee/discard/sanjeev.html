@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saarthi AI - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #e8e6ff 0%, #f0f0ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            margin: 0;
+        }
+
+        /* Background decorative elements */
+        .bg-decoration {
+            position: absolute;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-book-1 {
+            top: 10%;
+            left: 5%;
+            font-size: 120px;
+            transform: rotate(-15deg);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-book-2 {
+            top: 20%;
+            right: 8%;
+            font-size: 80px;
+            transform: rotate(25deg);
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .bg-graduation {
+            bottom: 15%;
+            left: 8%;
+            font-size: 100px;
+            transform: rotate(-10deg);
+            animation: float 7s ease-in-out infinite;
+        }
+
+        .bg-lightbulb {
+            top: 60%;
+            right: 15%;
+            font-size: 90px;
+            transform: rotate(20deg);
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .bg-pencil {
+            bottom: 20%;
+            right: 5%;
+            font-size: 110px;
+            transform: rotate(-20deg);
+            animation: float 9s ease-in-out infinite reverse;
+        }
+
+        .bg-apple {
+            top: 40%;
+            left: 10%;
+            font-size: 70px;
+            transform: rotate(15deg);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-globe {
+            bottom: 40%;
+            left: 3%;
+            font-size: 85px;
+            transform: rotate(-25deg);
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .bg-calculator {
+            top: 15%;
+            left: 50%;
+            font-size: 75px;
+            transform: rotate(30deg);
+            animation: float 7s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(var(--rotation, 0deg));
+            }
+            50% {
+                transform: translateY(-20px) rotate(var(--rotation, 0deg));
+            }
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 50px 60px;
+            width: 100%;
+            max-width: 650px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo::after {
+            content: '📚';
+            font-size: 28px;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .brand-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: #6b7280;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            padding: 18px 24px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .stats-preview {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .divider {
+            width: 1px;
+            background: #e5e7eb;
+            margin: 0 15px;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 40px 30px;
+                margin: 10px;
+                max-width: 90%;
+            }
+            
+            .login-title {
+                font-size: 28px;
+            }
+
+            .bg-decoration {
+                display: none;
+            }
+        }
+
+        /* Animation for form elements */
+        .form-group {
+            animation: slideUp 0.6s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .login-button { animation-delay: 0.4s; }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background decorative elements -->
+    <div class="bg-decoration bg-book-1" style="--rotation: -15deg;">📚</div>
+    <div class="bg-decoration bg-book-2" style="--rotation: 25deg;">📖</div>
+    <div class="bg-decoration bg-graduation" style="--rotation: -10deg;">🎓</div>
+    <div class="bg-decoration bg-lightbulb" style="--rotation: 20deg;">💡</div>
+    <div class="bg-decoration bg-pencil" style="--rotation: -20deg;">✏</div>
+    <div class="bg-decoration bg-apple" style="--rotation: 15deg;">🍎</div>
+    <div class="bg-decoration bg-globe" style="--rotation: -25deg;">🌍</div>
+    <div class="bg-decoration bg-calculator" style="--rotation: 30deg;">🧮</div>
+
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="logo"></div>
+            <div class="brand-name">SAARTHI AI</div>
+        </div>
+
+        <div class="login-header">
+            <h2 class="login-title">Welcome Back</h2>
+            <p class="login-subtitle">Sign in to access your dashboard</p>
+        </div>
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="Enter your username" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="role">Role</label>
+                <select id="role" name="role" class="form-select" required>
+                    <option value="">Select your role</option>
+                    <option value="parent">Parent</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+            </div>
+
+            <button type="submit" class="login-button">Sign In</button>
+        </form>
+
+        <div class="stats-preview">
+            <div class="stat-item">
+                <span class="stat-number">1220</span>
+                <span class="stat-label">Students</span>
+            </div>
+            <div class="divider"></div>
+            <div class="stat-item">
+                <span class="stat-number">120</span>
+                <span class="stat-label">Teachers</span>
+            </div>
+            <div class="divider"></div>
+            <div class="stat-item">
+                <span class="stat-number">15</span>
+                <span class="stat-label">Courses</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

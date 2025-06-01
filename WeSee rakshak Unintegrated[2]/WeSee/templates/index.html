@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Education Dashboard">
+    <meta name="keywords" content="dashboard, education, admin">
+    <meta name="author" content="Your Name">
+    <title>Education Dashboard</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- CSS -->
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #F8F8FF;
+            --sidebar-bg: #fff;
+            --main-bg: #f6f7fb;
+            --card1: #e3e7fd;
+            --card2: #fde3e3;
+            --card3: #e3fdf5;
+            --card4: #fdf5e3;
+            --text: #222;
+            --muted: #888;
+            --border: #ececec;
+            --radius: 18px;
+            --shadow: 0 2px 8px rgba(44,62,80,0.07);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--main-bg);
+            color: var(--text);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: var(--sidebar-bg);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            border-radius: var(--radius);
+            margin: 16px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 0 32px 24px 32px;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 32px;
+            font-size: 1.1rem;
+            color: var(--muted);
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+
+        .sidebar-nav li.active, .sidebar-nav li:hover {
+            background: var(--primary);
+            color: #fff;
+            border-left: 4px solid var(--primary);
+        }
+
+        .invite-friend {
+            margin: 32px 32px 0 32px;
+            background: var(--card1);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .invite-friend i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .invite-friend button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 32px 24px 32px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 4px 8px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            padding: 8px;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .card1 { background: var(--card1); }
+        .card2 { background: var(--card2); }
+        .card3 { background: var(--card3); }
+        .card4 { background: var(--card4); }
+
+        .card i {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+
+        .dashboard-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .statistics, .course-activities {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            flex: 1;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stats-chart {
+            margin-top: 16px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            height: 120px;
+        }
+
+        .bar {
+            width: 24px;
+            background: var(--primary);
+            border-radius: 8px 8px 0 0;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+        }
+
+        .bar-2017 { height: 40px; }
+        .bar-2018 { height: 60px; }
+        .bar-2019 { height: 80px; }
+        .bar-2020 { height: 100px; opacity: 1; }
+        .bar-2021 { height: 70px; }
+
+        .bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .course-activities {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .progress-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0% 75%, #eee 75% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .progress-labels {
+            display: flex;
+            gap: 16px;
+            font-size: 0.95rem;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        .dot.process { background: var(--primary); }
+        .dot.in-process { background: #eee; }
+
+        .database-table {
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        .database-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .database-table th, .database-table td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .database-table th {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .pass {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .fail {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .right-panel {
+            width: 320px;
+            background: #fff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 16px 16px 16px 0;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .user-profile i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .calendar {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .calendar span {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .calendar-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .calendar-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .calendar-row .active {
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 8px;
+        }
+
+        .notice-board {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .notice-board span {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .notice-board ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notice-board li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 0.98rem;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dashboard-stats {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .sidebar, .right-panel {
+                width: 100%;
+                margin: 0 0 16px 0;
+            }
+            .main-content {
+                padding: 0 0 32px 0;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-graduation-cap logo"></i>
+                <span>EDUNEX</span>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><i class="fas fa-th-large"></i> Dashboard</li>
+                    <li><i class="fas fa-list"></i> Overview</li>
+                    <li><i class="fas fa-book"></i> Courses</li>
+                    <li><i class="fas fa-user-graduate"></i> Students</li>
+                    <li><i class="fas fa-chalkboard-teacher"></i> Teachers</li>
+                    <li><i class="fas fa-file-alt"></i> Exam</li>
+                    <li><i class="fas fa-chart-bar"></i> Result</li>
+                    <li><i class="fas fa-video"></i> Videos</li>
+                </ul>
+            </nav>
+            <div class="invite-friend">
+                <i class="fas fa-user-plus"></i>
+                <p>Invite Friend</p>
+                <button>Get the link</button>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Dashboard</h1>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </header>
+            <section class="dashboard-cards">
+                <div class="card card1">
+                    <a href="/shiksha_mitra.html">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <p>Shiksha-Mitra</p>
+                            <h2>Personalized Learning Assistant</h2>
+                        </div>
+                    </a>
+                </div>
+                <div class="card card2">
+                    <a href="/index2">
+                    <i class="fas fa-user-tie"></i>
+                    <div>
+                        <p>Rakshak</p>
+                        <h2>Detects Dropout Risk</h2>
+                    </a>
+                    </div>
+                </div>
+                <div class="card card3">
+                    <a href="/mata.html">
+                        <i class="fas fa-book-open"></i>
+                        <div>
+                            <p>Mitra Mata-Pita</p>
+                            <h2>Text-Based Parent Updates</h2>
+                        </div>
+                    </a>
+                </div>
+                <div class="card card4">
+                    <i class="fas fa-door-open"></i>
+                    <div>
+                        <p>Guru Saathi</p>
+                        <h2>Tools For Teachers</h2>
+                    </div>
+                </div>
+            </section>
+            <section class="dashboard-stats">
+                <div class="statistics">
+                    <div class="stats-header">
+                        <span>Statistics</span>
+                        <select>
+                            <option>Yearly</option>
+                            <option>Monthly</option>
+                        </select>
+                    </div>
+                    <div class="stats-chart">
+                        <div class="bar-chart">
+                            <div class="bar bar-2017"></div>
+                            <div class="bar bar-2018"></div>
+                            <div class="bar bar-2019"></div>
+                            <div class="bar bar-2020 active"></div>
+                            <div class="bar bar-2021"></div>
+                        </div>
+                        <div class="bar-labels">
+                            <span>2017</span><span>2018</span><span>2019</span><span>2020</span><span>2021</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-activities">
+                    <span>Course Activities</span>
+                    <div class="progress-circle">
+                        <span>75%</span>
+                    </div>
+                    <div class="progress-labels">
+                        <span><span class="dot process"></span> Process</span>
+                        <span><span class="dot in-process"></span> In process</span>
+                    </div>
+                </div>
+            </section>
+            <section class="database-table">
+                <span>Database</span>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student name</th>
+                            <th>Score</th>
+                            <th>Submitted</th>
+                            <th>Grade</th>
+                            <th>Pass/Fail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Glenn Maxwell</td>
+                            <td>80/100</td>
+                            <td>12/10/2024 2:30 PM</td>
+                            <td>Excellent</td>
+                            <td><span class="pass">Pass</span></td>
+                        </tr>
+                        <tr>
+                            <td>Cathie Heavon</td>
+                            <td>70/100</td>
+                            <td>12/10/2024 2:30 PM</td>
+                            <td>Average</td>
+                            <td><span class="pass">Pass</span></td>
+                        </tr>
+                        <tr>
+                            <td>Yeadar Gil</td>
+                            <td>35/100</td>
+                            <td>12/10/2024 2:30 PM</td>
+                            <td>Poor</td>
+                            <td><span class="fail">Fail</span></td>
+                        </tr>
+                        <tr>
+                            <td>Preeth Singh</td>
+                            <td>89/100</td>
+                            <td>12/10/2024 2:30 PM</td>
+                            <td>Excellent</td>
+                            <td><span class="pass">Pass</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+        <aside class="right-panel">
+            <div class="user-profile">
+                <i class="fas fa-user-circle"></i>
+                <span>Jara Khan</span>
+            </div>
+            <div class="calendar">
+                <span>January 2022</span>
+                <div class="calendar-grid">
+                    <div class="calendar-row calendar-days">
+                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    </div>
+                    <div class="calendar-row"><span></span><span></span><span></span><span>1</span><span>2</span><span>3</span><span>4</span></div>
+                    <div class="calendar-row"><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span></div>
+                    <div class="calendar-row"><span>12</span><span class="active">13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span></div>
+                    <div class="calendar-row"><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span></div>
+                    <div class="calendar-row"><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span><span></span></div>
+                </div>
+            </div>
+            <div class="notice-board">
+                <span>Notice Board</span>
+                <ul>
+                    <li><i class="fas fa-bell"></i> Notice of Special Examinations of Semester Spring 2021</li>
+                    <li><i class="fas fa-clock"></i> Time Extension Notice of Semester Admission</li>
+                    <li><i class="fas fa-syringe"></i> COVID-19 Vaccination Survey October 2021</li>
+                    <li><i class="fas fa-graduation-cap"></i> Scholarship Viva Notice</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Add this at the beginning of your script section
+        // Display current date
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+        });
+
+        // ... rest of your existing script code ...
+    </script>
+</body>
+</html>
